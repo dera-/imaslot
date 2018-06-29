@@ -9,48 +9,6 @@
 			"path": "script/main.js",
 			"global": true
 		},
-		"nata_mu1": {
-			"type": "image",
-			"width": 300,
-			"height": 300,
-			"path": "image/nata_mu1.jpg"
-		},
-		"nata_mu2": {
-			"type": "image",
-			"width": 300,
-			"height": 300,
-			"path": "image/nata_mu2.jpg"
-		},
-		"nata_muri": {
-			"type": "image",
-			"width": 300,
-			"height": 300,
-			"path": "image/nata_muri.jpg"
-		},
-		"nata_suki": {
-			"type": "image",
-			"width": 300,
-			"height": 300,
-			"path": "image/nata_suki.jpg"
-		},
-		"nata_sushi": {
-			"type": "image",
-			"width": 300,
-			"height": 300,
-			"path": "image/nata_sushi.jpg"
-		},
-		"nata_toutoi1": {
-			"type": "image",
-			"width": 300,
-			"height": 300,
-			"path": "image/nata_toutoi1.jpg"
-		},
-		"nata_toutoi2": {
-			"type": "image",
-			"width": 300,
-			"height": 300,
-			"path": "image/nata_toutoi2.jpg"
-		},
 		"config": {
 			"type": "script",
 			"path": "script/config.js",
@@ -179,6 +137,77 @@
 			"width": 111,
 			"height": 98,
 			"path": "image/stop_button.png"
+		},
+		"main_bgm": {
+			"type": "audio",
+			"path": "audio/main_bgm",
+			"systemId": "music",
+			"duration": 24000
+		},
+		"hit_se": {
+			"type": "audio",
+			"path": "audio/hit_se",
+			"systemId": "sound",
+			"duration": 1057
+		},
+		"start_se": {
+			"type": "audio",
+			"path": "audio/start_se",
+			"systemId": "sound",
+			"duration": 1626
+		},
+		"stop_se": {
+			"type": "audio",
+			"path": "audio/stop_se",
+			"systemId": "sound",
+			"duration": 575
+		},
+		"DynamicFontRepository": {
+			"type": "script",
+			"path": "script/repository/DynamicFontRepository.js",
+			"global": true
+		},
+		"nata_mu1": {
+			"type": "image",
+			"width": 300,
+			"height": 300,
+			"path": "image/nata_mu1.png"
+		},
+		"nata_mu2": {
+			"type": "image",
+			"width": 300,
+			"height": 300,
+			"path": "image/nata_mu2.png"
+		},
+		"nata_muri": {
+			"type": "image",
+			"width": 300,
+			"height": 300,
+			"path": "image/nata_muri.png"
+		},
+		"nata_suki": {
+			"type": "image",
+			"width": 300,
+			"height": 300,
+			"path": "image/nata_suki.png"
+		},
+		"nata_sushi": {
+			"type": "image",
+			"width": 300,
+			"height": 300,
+			"path": "image/nata_sushi.png"
+		},
+		"nata_toutoi1": {
+			"type": "image",
+			"width": 300,
+			"height": 300,
+			"path": "image/nata_toutoi1.png"
+		},
+		"nata_toutoi2": {
+			"type": "image",
+			"width": 300,
+			"height": 300,
+			"path": "image/nata_toutoi2.png"
 		}
 	},
 	"environment": {

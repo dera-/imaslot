@@ -41,13 +41,18 @@ export const config: any = {
 			}
 		},
 		player: {
-			default_money: 30,
+			default_money: 3,
 			character: {
-				default_status: "nata_mu1",
+				default_status: "nata_sushi",
 				width: 200,
 				height: 200,
 				x: 556,
 				y: 400
+			},
+			label: {
+				x: 556,
+				y: 360,
+				size: 30
 			}
 		}
 	}

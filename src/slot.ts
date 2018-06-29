@@ -55,6 +55,10 @@ export class Slot {
 		});
 	}
 
+	canStop(index: number) {
+		return this._reels[index].isMaxSpeed();
+	}
+
 	stop(index: number) {
 		this._reels[index].allowSpin = false;
 	}
@@ -141,6 +145,10 @@ export class Reel {
 
 	isStop(): boolean {
 		return this._allowSpin === false && this._spinSpeed === 0;
+	}
+
+	isMaxSpeed(): boolean {
+		return this._spinSpeed === maxSpeed;
 	}
 
 	private initialize(): void {
