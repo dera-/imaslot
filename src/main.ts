@@ -69,7 +69,7 @@ export = (param: g.GameMainParameterObject): void => {
 			"nata_suki",
 			"nata_sushi",
 			"nata_toutoi1",
-			"nata_toutoi2",
+			"nata_toutoi2"
 		];
 		const nataliaFaceSprites: {[key: string]: g.Sprite} = {};
 		nataliaFaceSpriteKeys.forEach((key: string) => {
@@ -134,6 +134,8 @@ export = (param: g.GameMainParameterObject): void => {
 			src: scene.assets["start_button"] as g.ImageAsset,
 			width: config.game.slot.button.start.width,
 			height: config.game.slot.button.start.height,
+			srcWidth: 169,
+			srcHeight: 89,
 			x: config.game.slot.button.start.x,
 			y: config.game.slot.button.start.y,
 			touchable: true
@@ -158,6 +160,8 @@ export = (param: g.GameMainParameterObject): void => {
 				src: scene.assets["stop_button"] as g.ImageAsset,
 				width: config.game.slot.button.stop.width,
 				height: config.game.slot.button.stop.height,
+				srcWidth: 111,
+				srcHeight: 98,
 				x: config.game.slot.button.stop.x  + index * config.game.slot.button.stop.intervalX,
 				y: config.game.slot.button.stop.y,
 				touchable: true
@@ -188,7 +192,7 @@ export = (param: g.GameMainParameterObject): void => {
 			}
 		});
 
-		(scene.assets["main_bgm"] as g.AudioAsset).play();
+		// (scene.assets["main_bgm"] as g.AudioAsset).play();
 
 		// const url = "https://api.search.nicovideo.jp/api/v2/illust/contents/search?q=%E3%83%8A%E3%82%BF%E3%83%BC%E3%83%AA%E3%82%A2"
 		// 	+ "&targets=tags&fields=title,description,tags,viewCounter,mylistCounter,commentCounter,thumbnailUrl"

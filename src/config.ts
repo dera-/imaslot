@@ -5,38 +5,38 @@ export const config: any = {
 		slot: {
 			reel: {
 				element: {
-					width: 165,
-					height: 165,
+					width: 150,
+					height: 150,
 					count_per_set: 5,
 					set_count: 5,
-					dy: -15
+					dy: -35
 				},
 				pane: {
 					width: 150,
-					height: 170,
+					height: 410,
 					dx: 18,
-					dy: 20,
-					intervalX: 165
+					dy: 35,
+					intervalX: 160
 				},
 				width: 512,
-				height: 199,
+				height: 470,
 				x: 0,
-				y: 20,
+				y: 0,
 				count: 3
 			},
 			button: {
 				start: {
-					x: 0,
-					y: 400,
-					width: 169,
-					height: 89
+					x: 200,
+					y: 535,
+					width: 119,
+					height: 63
 				},
 				stop: {
 					x: 50,
-					y: 230,
+					y: 450,
 					intervalX: 160,
-					width: 111,
-					height: 98
+					width: 77,
+					height: 70
 				}
 			}
 		},
