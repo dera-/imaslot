@@ -3,7 +3,7 @@ declare const console: any; // デバッグ用
 
 const prise = 20;
 const minimumBuyIn = 1;
-const displayedIndex = 20;
+const displayedIndex = 24;
 const maxSpeed = 2000 / 30; // スロットのスピンの最大速度(フレーム単位)
 const acceleration = maxSpeed / 45; // スロットのスピンの加速度
 const minusAcceleration = maxSpeed / 30; // ストップボタン押された後のスロットのスピンの加速度
@@ -53,6 +53,10 @@ export class Slot {
 		this._reels.forEach((reel: Reel) => {
 			reel.spin();
 		});
+	}
+
+	canStop(index: number) {
+		return this._reels[index].isMaxSpeed();
 	}
 
 	stop(index: number) {
@@ -126,21 +130,25 @@ export class Reel {
 		this.updateSpeed();
 		this._sprites.forEach((sprite: g.Sprite) => {
 			sprite.y += this._spinSpeed;
-			if (sprite.y >= config.game.slot.reel.y + config.game.slot.reel.height) {
+			if (sprite.y >= config.game.slot.reel.pane.height) {
 				sprite.y -= config.game.slot.reel.element.height * config.game.slot.reel.element.count_per_set * this._sprites.length;
 			}
 			sprite.modified();
 		});
-		this.setCurrentIndex();
 		// 位置の調整
 		// TODO できれば調整もアニメーション付けたいけど手抜きでいきなりずらす
 		if (this._spinSpeed === 0) {
+			this.setCurrentIndex(); // 今は止まった時だけindex値判定しているが、毎回必要かどうか？
 			this.setYPlace();
 		}
 	}
 
 	isStop(): boolean {
 		return this._allowSpin === false && this._spinSpeed === 0;
+	}
+
+	isMaxSpeed(): boolean {
+		return this._spinSpeed === maxSpeed;
 	}
 
 	private initialize(): void {
@@ -153,9 +161,10 @@ export class Reel {
 	private setYPlace(): void {
 		for (let i = 0; i < this._sprites.length; i++) {
 			const sprite = this._sprites[i];
+			const index = i === 0 && this._currentIndex === 24 ? this._sprites.length : i;
 			sprite.y = config.game.slot.reel.element.dy
-				+ config.game.slot.reel.element.height * config.game.slot.reel.element.count_per_set * i
-				- config.game.slot.reel.element.height * this._currentIndex;
+				+ config.game.slot.reel.element.height * config.game.slot.reel.element.count_per_set * index
+				- config.game.slot.reel.element.height * (this._currentIndex - 1);
 			if (sprite.y >= config.game.slot.reel.pane.height) {
 				sprite.y -= config.game.slot.reel.element.height * config.game.slot.reel.element.count_per_set * this._sprites.length;
 			}
@@ -182,8 +191,8 @@ export class Reel {
 		for (let i = 0; i < this._sprites.length; i++) {
 			const sprite = this._sprites[i];
 			const elementCount = config.game.slot.reel.element.count_per_set;
-			const min = (0.5 - elementCount) * config.game.slot.reel.element.height + config.game.slot.reel.element.dy;
-			const max = config.game.slot.reel.element.height + config.game.slot.reel.element.dy;
+			const min = (1.5 - elementCount) * config.game.slot.reel.element.height + config.game.slot.reel.element.dy;
+			const max = 2 * config.game.slot.reel.element.height + config.game.slot.reel.element.dy;
 			if (min <= sprite.y && sprite.y < max) {
 				this._currentIndex = i * elementCount + elementCount - Math.ceil((sprite.y - min) / config.game.slot.reel.element.width);
 				break;
