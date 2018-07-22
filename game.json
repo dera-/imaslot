@@ -183,5 +183,19 @@
 	},
 	"environment": {
 		"sandbox-runtime": "2"
+	},
+	"globalScripts": [
+		"node_modules/@akashic-extension/akashic-keyboard-plugin/lib/index.js",
+		"node_modules/@akashic-extension/akashic-liquidfun/lib/EBody.js",
+		"node_modules/@akashic-extension/akashic-liquidfun/lib/EParticle.js",
+		"node_modules/@akashic-extension/akashic-liquidfun/lib/LiquidFun.js",
+		"node_modules/@akashic-extension/akashic-liquidfun/lib/index.js",
+		"node_modules/@akashic-extension/liquidfun/liquidfun.js"
+	],
+	"moduleMainScripts": {
+		"@akashic/nico-analytics": "node_modules/@akashic/nico-analytics/lib/index.js",
+		"@akashic-extension/akashic-keyboard-plugin": "node_modules/@akashic-extension/akashic-keyboard-plugin/lib/index.js",
+		"@akashic-extension/akashic-liquidfun": "node_modules/@akashic-extension/akashic-liquidfun/lib/index.js",
+		"@akashic-extension/liquidfun": "node_modules/@akashic-extension/liquidfun/liquidfun.js"
 	}
 }

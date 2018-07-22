@@ -26,5 +26,11 @@
     "rimraf": "~2.6.2",
     "tslint": "~5.8.0",
     "typescript": "~2.6.2"
-  }
+  },
+  "dependencies": {
+    "@akashic-extension/akashic-keyboard-plugin": "0.0.2",
+    "@akashic-extension/akashic-liquidfun": "0.0.1",
+    "@akashic-extension/nico-analytics": "1.0.0"
+  },
+  "optionalDependencies": {}
 }
