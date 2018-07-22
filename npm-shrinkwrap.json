@@ -31,9 +31,8 @@
       "integrity": "sha1-PPlM94Ut2GFO+O+b8SrPSv3EOuk="
     },
     "@akashic-extension/nico-analytics": {
-      "version": "1.0.0",
-      "resolved": "https://npm.coe.nicovideo.jp/@akashic-extension%2fnico-analytics/-/nico-analytics-1.0.0.tgz",
-      "integrity": "sha1-t5HwXLsVx+m1m42naOpZ63UcFiU=",
+      "version": "file:../nico-analytics/akashic-extension-nico-analytics-1.0.0.tgz",
+      "integrity": "sha1-9nwsWjZVboq3FC1umZN2XQtSLpA=",
       "requires": {
         "@akashic/akashic-engine": "2.2.1"
       },

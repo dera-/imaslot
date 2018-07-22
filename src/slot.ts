@@ -76,10 +76,10 @@ export class Slot {
 	calculateScore(): number {
 		// 1列のみ評価
 		let currentNumber;
-		console.log("calculate");
-		for (const reel of this._reels) {
-			console.log(reel.getCurrentNumber());
-		}
+		// console.log("calculate");
+		// for (const reel of this._reels) {
+		// 	console.log(reel.getCurrentNumber());
+		// }
 		for (const reel of this._reels) {
 			if (currentNumber === undefined) {
 				currentNumber = reel.getCurrentNumber();
