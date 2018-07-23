@@ -8,10 +8,19 @@ const maxSpeed = 2000 / 30; // スロットのスピンの最大速度(フレー
 const acceleration = maxSpeed / 45; // スロットのスピンの加速度
 const minusAcceleration = maxSpeed / 30; // ストップボタン押された後のスロットのスピンの加速度
 const lineElements = [
+	// 上の3行はテスト用
+	// [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	// [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	// [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
 	[24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0, 23, 21, 19, 17, 15, 13, 11, 9, 7, 5, 3, 1],
 	[4, 7, 10, 13, 16, 19, 22, 0, 3, 6, 9, 12, 15, 18, 21, 24, 2, 5, 8, 11, 14, 17, 20, 23, 1]
 ];
+
+interface HitEvaluation {
+	place: number[];
+	ozz: number;
+}
 
 export class Slot {
 	public static getMinimumBuyIn(): number {
@@ -74,20 +83,45 @@ export class Slot {
 	}
 
 	calculateScore(): number {
-		// 1列のみ評価
-		let currentNumber;
 		// console.log("calculate");
 		// for (const reel of this._reels) {
 		// 	console.log(reel.getCurrentNumber());
 		// }
-		for (const reel of this._reels) {
-			if (currentNumber === undefined) {
-				currentNumber = reel.getCurrentNumber();
-			} else if (reel.getCurrentNumber() !== currentNumber) {
-				return 0;
+		let dividends = 0;
+		const displayed: number[][] = this._reels.map((reel: Reel) => reel.getCurrentNumbers());
+		console.log("displayed", displayed);
+		const evaluations: HitEvaluation[] = [
+			{
+				place: [0, 0, 0],
+				ozz: 1.0
+			},
+			{
+				place: [1, 1, 1],
+				ozz: 1.5
+			},
+			{
+				place: [2, 2, 2],
+				ozz: 1.0
+			},
+			{
+				place: [0, 1, 2],
+				ozz: 1.0
+			},
+			{
+				place: [2, 1, 0],
+				ozz: 1.0
 			}
-		}
-		return prise * this.magnification;
+		];
+		evaluations.forEach((ev: HitEvaluation) => {
+			console.log(displayed[0][ev.place[0]], displayed[1][ev.place[1]], displayed[2][ev.place[2]]);
+			if (displayed[0][ev.place[0]] === displayed[1][ev.place[1]]
+				&& displayed[0][ev.place[0]] === displayed[2][ev.place[2]]) {
+				console.log("hit");
+				dividends += ev.ozz * prise * this.magnification;
+				console.log(dividends);
+			}
+		});
+		return dividends;
 	}
 
 	refresh(): void {
@@ -124,6 +158,12 @@ export class Reel {
 
 	getCurrentNumber(): number {
 		return this._elements[this._currentIndex];
+	}
+
+	getCurrentNumbers(): number[] {
+		const upperIndex = this._currentIndex === 0 ? this._elements.length - 1 : this._currentIndex - 1;
+		const downerIndex = (this._currentIndex + 1) % this._elements.length;
+		return [this._elements[upperIndex], this._elements[this._currentIndex], this._elements[downerIndex]];
 	}
 
 	spin(): void {
@@ -195,6 +235,10 @@ export class Reel {
 			const max = 2 * config.game.slot.reel.element.height + config.game.slot.reel.element.dy;
 			if (min <= sprite.y && sprite.y < max) {
 				this._currentIndex = i * elementCount + elementCount - Math.ceil((sprite.y - min) / config.game.slot.reel.element.width);
+				if (this._currentIndex < 0) {
+					this._currentIndex = this._elements.length + this._currentIndex;
+				}
+				this._currentIndex = this._currentIndex % this._elements.length;
 				break;
 			}
 		}
