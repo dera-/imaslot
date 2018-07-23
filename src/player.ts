@@ -1,5 +1,6 @@
 import {config} from "./config";
 import {DynamicFontRepository} from "./repository/DynamicFontRepository";
+import {GAServiceForDerarara} from "./service/GAServiceForDerarara";
 
 export class Player {
 	private _money: number;
@@ -9,7 +10,7 @@ export class Player {
 
 	constructor(charaSprites: {[key: string]: g.Sprite}) {
 		this._charaSprites = charaSprites;
-		this._money = config.game.player.default_money;
+		this._money = GAServiceForDerarara.instance.getParameter().defaultMoney;
 		this._currentCharaStatus = config.game.player.character.default_status;
 	}
 

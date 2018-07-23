@@ -213,6 +213,11 @@
 			"type": "script",
 			"path": "script/service/GAServiceForDerarara.js",
 			"global": true
+		},
+		"CandidateParameter": {
+			"type": "script",
+			"path": "script/CandidateParameter.js",
+			"global": true
 		}
 	},
 	"environment": {
@@ -225,11 +230,11 @@
 		"node_modules/@akashic-extension/akashic-liquidfun/lib/LiquidFun.js",
 		"node_modules/@akashic-extension/akashic-liquidfun/lib/index.js",
 		"node_modules/@akashic-extension/liquidfun/liquidfun.js",
-		"node_modules/@akashic-extension/nico-analytics/lib/index.js",
-		"node_modules/@akashic-extension/nico-analytics/lib/GoogleAnalyticsService.js"
+		"node_modules/akashic-analytics/lib/index.js",
+		"node_modules/akashic-analytics/lib/GoogleAnalyticsService.js"
 	],
 	"moduleMainScripts": {
-		"@akashic-extension/nico-analytics": "node_modules/@akashic-extension/nico-analytics/lib/index.js",
+		"akashic-analytics": "node_modules/akashic-analytics/lib/index.js",
 		"@akashic-extension/akashic-keyboard-plugin": "node_modules/@akashic-extension/akashic-keyboard-plugin/lib/index.js",
 		"@akashic-extension/akashic-liquidfun": "node_modules/@akashic-extension/akashic-liquidfun/lib/index.js",
 		"@akashic-extension/liquidfun": "node_modules/@akashic-extension/liquidfun/liquidfun.js"

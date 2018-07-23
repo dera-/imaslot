@@ -30,20 +30,6 @@
       "resolved": "https://npm.coe.nicovideo.jp/@akashic-extension%2fliquidfun/-/liquidfun-1.1.0.tgz",
       "integrity": "sha1-PPlM94Ut2GFO+O+b8SrPSv3EOuk="
     },
-    "@akashic-extension/nico-analytics": {
-      "version": "file:../nico-analytics/akashic-extension-nico-analytics-1.0.0.tgz",
-      "integrity": "sha1-9nwsWjZVboq3FC1umZN2XQtSLpA=",
-      "requires": {
-        "@akashic/akashic-engine": "2.2.1"
-      },
-      "dependencies": {
-        "@akashic/akashic-engine": {
-          "version": "2.2.1",
-          "resolved": "https://npm.coe.nicovideo.jp/@akashic%2fakashic-engine/-/akashic-engine-2.2.1.tgz",
-          "integrity": "sha512-sEbGkKylOYu90w/zdN+3+FJyGrTinQkdgqXFxijGujk5nDmtI3Tl6885rOf6xFh/VQpx3nhsNp05gT8ZP7LV5A=="
-        }
-      }
-    },
     "@akashic/akashic-cli-commons": {
       "version": "0.2.9",
       "resolved": "https://npm.coe.nicovideo.jp/@akashic%2fakashic-cli-commons/-/akashic-cli-commons-0.2.9.tgz",
@@ -245,6 +231,20 @@
           "resolved": "https://registry.npmjs.org/acorn/-/acorn-5.5.3.tgz",
           "integrity": "sha512-jd5MkIUlbbmb07nXH0DT3y7rDVtkzDi4XZOUVWAer8ajmF/DTSSbl5oNFyDOl/OXA33Bl79+ypHhl2pN20VeOQ==",
           "dev": true
+        }
+      }
+    },
+    "akashic-analytics": {
+      "version": "file:../akashic-analytics/akashic-analytics-1.0.0.tgz",
+      "integrity": "sha1-s3DljVzUwdFJ8xEKNLUQZ0ySNxc=",
+      "requires": {
+        "@akashic/akashic-engine": "2.3.5"
+      },
+      "dependencies": {
+        "@akashic/akashic-engine": {
+          "version": "2.3.5",
+          "resolved": "https://npm.coe.nicovideo.jp/@akashic%2fakashic-engine/-/akashic-engine-2.3.5.tgz",
+          "integrity": "sha512-B7IAyKDpJO9VPfv4Vub6V5Pdyt4ZQ+//dsZ5uKGKA4l2Wcg01+XTE4lJOBCxVTkMbDndQJbsRdzSL77cqKgFmA=="
         }
       }
     },

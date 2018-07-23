@@ -1,11 +1,14 @@
+import {GAServiceForDerarara} from "./service/GAServiceForDerarara";
+import {candidates} from "./CandidateParameter";
+
+GAServiceForDerarara.initialize("imaslot", candidates);
+
 import {Reel, Slot} from "./slot";
 import {config} from "./config";
 import {Player} from "./player";
 import {DynamicFontRepository} from "./repository/DynamicFontRepository";
-import {GAServiceForDerarara} from "./service/GAServiceForDerarara";
 
 export = (param: g.GameMainParameterObject): void => {
-	const gaService = new GAServiceForDerarara("imaslot");
 	const scene = new g.Scene({
 		game: g.game,
 		assetIds: [
@@ -42,6 +45,7 @@ export = (param: g.GameMainParameterObject): void => {
 		]
 	});
 	scene.loaded.add(() => {
+		console.log("currentNum", GAServiceForDerarara.instance.currentNumber);
 		// フォントの生成
 		const playerFont = new g.DynamicFont({
 			game: scene.game,
@@ -187,7 +191,7 @@ export = (param: g.GameMainParameterObject): void => {
 				// TODO お金が増えたエフェクトと演出
 				player.addMoney(slot.calculateScore());
 				slot.refresh();
-				gaService.sendScore(player.money);
+				GAServiceForDerarara.instance.sendScore(player.money);
 			}
 			// 表情変化 TODO: なんかRepositoryクラスとかで管理したい
 			if (player.currentCharaStatus !== "nata_muri" && !player.canContinue()) {

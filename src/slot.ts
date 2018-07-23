@@ -1,10 +1,12 @@
 import {config} from "./config";
+import {GAServiceForDerarara} from "./service/GAServiceForDerarara";
+
 declare const console: any; // デバッグ用
 
 const prise = 20;
 const minimumBuyIn = 1;
 const displayedIndex = 24;
-const maxSpeed = 2000 / 30; // スロットのスピンの最大速度(フレーム単位)
+const maxSpeed = GAServiceForDerarara.instance.getParameter().maxSpeed; // スロットのスピンの最大速度(フレーム単位)
 const acceleration = maxSpeed / 45; // スロットのスピンの加速度
 const minusAcceleration = maxSpeed / 30; // ストップボタン押された後のスロットのスピンの加速度
 const lineElements = [

@@ -41,7 +41,6 @@ export const config: any = {
 			}
 		},
 		player: {
-			default_money: 20,
 			character: {
 				default_status: "nata_sushi",
 				width: 200,

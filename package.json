@@ -30,7 +30,7 @@
   "dependencies": {
     "@akashic-extension/akashic-keyboard-plugin": "0.0.2",
     "@akashic-extension/akashic-liquidfun": "0.0.1",
-    "@akashic-extension/nico-analytics": "file:../nico-analytics/akashic-extension-nico-analytics-1.0.0.tgz"
+    "akashic-analytics": "file:../akashic-analytics/akashic-analytics-1.0.0.tgz"
   },
   "optionalDependencies": {}
 }
