@@ -26,7 +26,7 @@ export const config: any = {
 			},
 			button: {
 				start: {
-					x: 200,
+					x: 50,
 					y: 535,
 					width: 119,
 					height: 63
@@ -37,6 +37,13 @@ export const config: any = {
 					intervalX: 160,
 					width: 77,
 					height: 70
+				},
+				bet: {
+					x: 200,
+					y: 535,
+					width: 119,
+					height: 63,
+					label_size: 24
 				}
 			}
 		},
@@ -52,8 +59,21 @@ export const config: any = {
 			label: {
 				x: 556,
 				y: 360,
-				size: 30
+				size: 36
+			},
+			diff_label: {
+				x: 556,
+				y: 360,
+				size: 36
 			}
+		},
+		time: {
+			label: {
+				x: 556,
+				y: 50,
+				size: 28
+			},
+			default_limit: 60
 		}
 	}
 };

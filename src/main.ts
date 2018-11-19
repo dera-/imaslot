@@ -36,9 +36,24 @@ export = (param: g.GameMainParameterObject): void => {
 			"main_bgm",
 			"hit_se",
 			"start_se",
-			"stop_se"
+			"stop_se",
+			"pushed_start_button",
+			"pushed_stop_button",
+			"button",
+			"pushed_button"
 		]
 	});
+	let totalTimeLimit = config.game.default_time_limit;
+	scene.message.add((msg) => {
+		if (msg.data && msg.data.type === "start") {
+			// type: "start" でも parameters などが与えられないこともあるので存在を確認
+			if (msg.data.parameters && msg.data.parameters.totalTimeLimit) {
+				// 制限時間は `totalTimeLimit` 秒
+				totalTimeLimit = msg.data.parameters.totalTimeLimit;
+			}
+		}
+	});
+
 	scene.loaded.add(() => {
 		// フォントの生成
 		const playerFont = new g.DynamicFont({
@@ -46,7 +61,19 @@ export = (param: g.GameMainParameterObject): void => {
 			fontFamily: g.FontFamily.Monospace,
 			size: config.game.player.label.size
 		});
+		const timeFont = new g.DynamicFont({
+			game: scene.game,
+			fontFamily: g.FontFamily.Monospace,
+			size: config.game.time.label.size
+		});
+		const betFont = new g.DynamicFont({
+			game: scene.game,
+			fontFamily: g.FontFamily.Monospace,
+			size: config.game.slot.button.bet.label_size
+		});
 		DynamicFontRepository.instance.setDynamicFont("player", playerFont);
+		DynamicFontRepository.instance.setDynamicFont("time", timeFont);
+		DynamicFontRepository.instance.setDynamicFont("bet", betFont);
 
 		// 背景画像
 		const bgSprite = new g.Sprite({
@@ -128,7 +155,7 @@ export = (param: g.GameMainParameterObject): void => {
 		}
 		const slot = new Slot(reels);
 
-		// ボタン画像
+		// スタートボタンsprite
 		const startButtonSprite = new g.Sprite({
 			scene: scene,
 			src: scene.assets["start_button"] as g.ImageAsset,
@@ -140,8 +167,13 @@ export = (param: g.GameMainParameterObject): void => {
 			y: config.game.slot.button.start.y,
 			touchable: true
 		});
+		startButtonSprite.pointDown.add(() => {
+			startButtonSprite.surface = g.Util.asSurface(scene.assets["pushed_start_button"] as g.ImageAsset);
+			startButtonSprite.invalidate();
+		});
 		startButtonSprite.pointUp.add(() => {
-			// TODO ボタン押したらBETとスロットスタート同時にやっているが、あとで分けたいね
+			startButtonSprite.surface = g.Util.asSurface(scene.assets["start_button"] as g.ImageAsset);
+			startButtonSprite.invalidate();
 			if (player.canContinue() && slot.canBet()) {
 				// とりあえず自動でミニマムバイインを払う感じになっている
 				player.addMoney(-1 * Slot.getMinimumBuyIn());
@@ -153,7 +185,7 @@ export = (param: g.GameMainParameterObject): void => {
 			}
 		});
 		scene.append(startButtonSprite);
-
+		// ストップボタンsprite
 		const stopButtonSprites = [0, 1, 2].map((index: number) => {
 			return new g.Sprite({
 				scene: scene,
@@ -167,10 +199,15 @@ export = (param: g.GameMainParameterObject): void => {
 				touchable: true
 			});
 		});
-
 		for (let index = 0; index < stopButtonSprites.length; index++) {
 			const sprite = stopButtonSprites[index];
+			sprite.pointDown.add(() => {
+				sprite.surface = g.Util.asSurface(scene.assets["pushed_stop_button"] as g.ImageAsset);
+				sprite.invalidate();
+			});
 			sprite.pointUp.add(() => {
+				sprite.surface = g.Util.asSurface(scene.assets["stop_button"] as g.ImageAsset);
+				sprite.invalidate();
 				if (slot.canStop(index)) {
 					(scene.assets["stop_se"] as g.AudioAsset).play();
 					slot.stop(index);
@@ -178,6 +215,19 @@ export = (param: g.GameMainParameterObject): void => {
 			});
 			scene.append(sprite);
 		}
+		// BETボタン画像
+		const betButtonSprite = new g.Sprite({
+			scene: scene,
+			src: scene.assets["button"] as g.ImageAsset,
+			width: config.game.slot.button.bet.width,
+			height: config.game.slot.button.bet.height,
+			srcWidth: 205,
+			srcHeight: 111,
+			x: config.game.slot.button.bet.x,
+			y: config.game.slot.button.bet.y,
+			touchable: true
+		});
+		scene.append()
 
 		scene.update.add(() => {
 			slot.spin();
