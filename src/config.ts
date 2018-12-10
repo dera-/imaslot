@@ -1,5 +1,3 @@
-import {ZERO_LENGTH_ERROR} from "tslint/lib/verify/lines";
-
 export const config: any = {
 	game: {
 		slot: {
@@ -48,7 +46,7 @@ export const config: any = {
 			}
 		},
 		player: {
-			default_money: 20,
+			default_money: 100,
 			character: {
 				default_status: "nata_sushi",
 				width: 200,

@@ -1,16 +1,25 @@
 import {config} from "./config";
 import {DynamicFontRepository} from "./repository/DynamicFontRepository";
+import {Slot} from "./slot";
+
+const betValues = [1, 5, 10, 50, 100];
+const defaultBetIndex = -1;
 
 export class Player {
 	private _money: number;
 	private _charaSprites: {[key: string]: g.Sprite};
 	private _currentCharaStatus: string;
 	private _moneyLabel: g.Label;
+	// この下辺りの変数はmutableなやつ
+	private _betValue: number;
+	private _betValuesIndex: number;
 
 	constructor(charaSprites: {[key: string]: g.Sprite}) {
 		this._charaSprites = charaSprites;
 		this._money = config.game.player.default_money;
 		this._currentCharaStatus = config.game.player.character.default_status;
+		this._betValue = 0;
+		this._betValuesIndex = defaultBetIndex;
 	}
 
 	canContinue(): boolean {
@@ -29,8 +38,35 @@ export class Player {
 		return this._money;
 	}
 
+	get betValue(): number {
+		return this._betValue;
+	}
+
+	reserve(): void {
+		this._betValuesIndex++;
+		this._betValuesIndex = this._betValuesIndex % betValues.length;
+		this._betValue = betValues[this._betValuesIndex] * Slot.getMinimumBuyIn();
+		if (this._betValue > this.money) {
+			this._betValue = this.money;
+			this._betValuesIndex = defaultBetIndex;
+		}
+	}
+
+	bet(): void {
+		this.addMoney(-1 * this._betValue);
+		this.reset();
+	}
+
+	reset(): void {
+		this._betValue = 0;
+		this._betValuesIndex = defaultBetIndex;
+	}
+
 	addMoney(money: number): void {
 		this._money += money;
+		if (this._money < 0) {
+			this._money = 0;
+		}
 		this.changeMoneyLabel(this._money);
 	}
 

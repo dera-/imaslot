@@ -45,9 +45,9 @@ export class Slot {
 		return this.magnification === 0;
 	}
 
-	canStart() {
+	canStart(betValue: number) {
 		// 「倍率が0でないこと=スロット動かしている」と判断しているけど、個別にフラグを用意した方がいいかなぁ？？
-		return this.betValue >= minimumBuyIn && this.magnification === 0;
+		return betValue >= minimumBuyIn && this.magnification === 0;
 	}
 
 	start() {

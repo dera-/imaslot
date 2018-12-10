@@ -2,6 +2,7 @@ import {Reel, Slot} from "./slot";
 import {config} from "./config";
 import {Player} from "./player";
 import {DynamicFontRepository} from "./repository/DynamicFontRepository";
+import {createBlock} from "./block";
 
 export = (param: g.GameMainParameterObject): void => {
 	const scene = new g.Scene({
@@ -167,6 +168,13 @@ export = (param: g.GameMainParameterObject): void => {
 			y: config.game.slot.button.start.y,
 			touchable: true
 		});
+		const startButtonBlock = createBlock(
+			config.game.slot.button.start.x,
+			config.game.slot.button.start.y,
+			config.game.slot.button.start.width,
+			config.game.slot.button.start.height
+		);
+		startButtonBlock.visible();
 		startButtonSprite.pointDown.add(() => {
 			startButtonSprite.surface = g.Util.asSurface(scene.assets["pushed_start_button"] as g.ImageAsset);
 			startButtonSprite.invalidate();
@@ -174,17 +182,17 @@ export = (param: g.GameMainParameterObject): void => {
 		startButtonSprite.pointUp.add(() => {
 			startButtonSprite.surface = g.Util.asSurface(scene.assets["start_button"] as g.ImageAsset);
 			startButtonSprite.invalidate();
-			if (player.canContinue() && slot.canBet()) {
-				// とりあえず自動でミニマムバイインを払う感じになっている
-				player.addMoney(-1 * Slot.getMinimumBuyIn());
-				slot.addBetValue(Slot.getMinimumBuyIn());
-			}
-			if (slot.canStart()) {
+			if (slot.canStart(player.betValue)) {
+				slot.addBetValue(player.betValue);
+				player.bet();
+				betLabel.text = player.betValue + " bet";
+				betLabel.invalidate();
 				(scene.assets["start_se"] as g.AudioAsset).play();
 				slot.start();
 			}
 		});
 		scene.append(startButtonSprite);
+		scene.append(startButtonBlock);
 		// ストップボタンsprite
 		const stopButtonSprites = [0, 1, 2].map((index: number) => {
 			return new g.Sprite({
@@ -227,7 +235,29 @@ export = (param: g.GameMainParameterObject): void => {
 			y: config.game.slot.button.bet.y,
 			touchable: true
 		});
-		scene.append()
+		const betLabel = new g.Label({
+			scene: scene,
+			text: "0 bet",
+			textColor: "white",
+			font: DynamicFontRepository.instance.getDynamicFont("bet"),
+			fontSize: config.game.slot.button.bet.label_size
+		});
+		betButtonSprite.append(betLabel);
+		betButtonSprite.pointDown.add(() => {
+			betButtonSprite.surface = g.Util.asSurface(scene.assets["pushed_button"] as g.ImageAsset);
+			betButtonSprite.invalidate();
+		});
+		betButtonSprite.pointUp.add(() => {
+			betButtonSprite.surface = g.Util.asSurface(scene.assets["button"] as g.ImageAsset);
+			betButtonSprite.invalidate();
+			if (!slot.canBet()) {
+				return;
+			}
+			player.reserve();
+			betLabel.text = player.betValue + " bet";
+			betLabel.invalidate();
+		});
+		scene.append(betButtonSprite);
 
 		scene.update.add(() => {
 			slot.spin();

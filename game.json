@@ -208,6 +208,30 @@
 			"width": 300,
 			"height": 300,
 			"path": "image/nata_toutoi2.png"
+		},
+		"button": {
+			"type": "image",
+			"width": 205,
+			"height": 111,
+			"path": "image/button.png"
+		},
+		"pushed_button": {
+			"type": "image",
+			"width": 205,
+			"height": 111,
+			"path": "image/pushed_button.png"
+		},
+		"pushed_start_button": {
+			"type": "image",
+			"width": 169,
+			"height": 89,
+			"path": "image/pushed_start_button.png"
+		},
+		"pushed_stop_button": {
+			"type": "image",
+			"width": 111,
+			"height": 98,
+			"path": "image/pushed_stop_button.png"
 		}
 	},
 	"environment": {
