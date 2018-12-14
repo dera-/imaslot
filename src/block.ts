@@ -4,7 +4,7 @@ export const createBlock = (x: number, y: number, width: number, height: number)
 		y,
 		width,
 		height,
-		color: "black",
+		cssColor: "black",
 		alpha: 0.75
 	});
 };

@@ -174,7 +174,6 @@ export = (param: g.GameMainParameterObject): void => {
 			config.game.slot.button.start.width,
 			config.game.slot.button.start.height
 		);
-		startButtonBlock.visible();
 		startButtonSprite.pointDown.add(() => {
 			startButtonSprite.surface = g.Util.asSurface(scene.assets["pushed_start_button"] as g.ImageAsset);
 			startButtonSprite.invalidate();
@@ -185,6 +184,9 @@ export = (param: g.GameMainParameterObject): void => {
 			if (slot.canStart(player.betValue)) {
 				slot.addBetValue(player.betValue);
 				player.bet();
+				betButtonBlock.show();
+				startButtonBlock.show();
+				stopButtonBlocks.forEach(block => block.hide());
 				betLabel.text = player.betValue + " bet";
 				betLabel.invalidate();
 				(scene.assets["start_se"] as g.AudioAsset).play();
@@ -207,6 +209,14 @@ export = (param: g.GameMainParameterObject): void => {
 				touchable: true
 			});
 		});
+		const stopButtonBlocks = [0, 1, 2].map((index: number) => {
+			return createBlock(
+				config.game.slot.button.stop.x + index * config.game.slot.button.stop.intervalX,
+				config.game.slot.button.stop.y,
+				config.game.slot.button.stop.width,
+				config.game.slot.button.stop.height
+			);
+		});
 		for (let index = 0; index < stopButtonSprites.length; index++) {
 			const sprite = stopButtonSprites[index];
 			sprite.pointDown.add(() => {
@@ -217,12 +227,16 @@ export = (param: g.GameMainParameterObject): void => {
 				sprite.surface = g.Util.asSurface(scene.assets["stop_button"] as g.ImageAsset);
 				sprite.invalidate();
 				if (slot.canStop(index)) {
+					stopButtonBlocks[index].show();
 					(scene.assets["stop_se"] as g.AudioAsset).play();
 					slot.stop(index);
 				}
 			});
 			scene.append(sprite);
 		}
+		stopButtonBlocks.forEach((block) => {
+			scene.append(block);
+		});
 		// BETボタン画像
 		const betButtonSprite = new g.Sprite({
 			scene: scene,
@@ -242,6 +256,13 @@ export = (param: g.GameMainParameterObject): void => {
 			font: DynamicFontRepository.instance.getDynamicFont("bet"),
 			fontSize: config.game.slot.button.bet.label_size
 		});
+		const betButtonBlock = createBlock(
+			config.game.slot.button.bet.x,
+			config.game.slot.button.bet.y,
+			config.game.slot.button.bet.width,
+			config.game.slot.button.bet.height
+		);
+		betButtonBlock.hide(); // 初期状態では別途ボタンは押せるようにしておく
 		betButtonSprite.append(betLabel);
 		betButtonSprite.pointDown.add(() => {
 			betButtonSprite.surface = g.Util.asSurface(scene.assets["pushed_button"] as g.ImageAsset);
@@ -254,14 +275,17 @@ export = (param: g.GameMainParameterObject): void => {
 				return;
 			}
 			player.reserve();
+			startButtonBlock.hide();
 			betLabel.text = player.betValue + " bet";
 			betLabel.invalidate();
 		});
 		scene.append(betButtonSprite);
+		scene.append(betButtonBlock);
 
 		scene.update.add(() => {
 			slot.spin();
 			if (slot.isComplete()) {
+				betButtonBlock.hide();
 				// TODO お金が増えたエフェクトと演出
 				player.addMoney(slot.calculateScore());
 				slot.refresh();
