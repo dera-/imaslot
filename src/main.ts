@@ -45,12 +45,10 @@ export = (param: g.GameMainParameterObject): void => {
 	scene.message.add((msg) => {
 		if (msg.data && msg.data.type === "start" && msg.data.parameters) {
 			const sessionParameters: any = msg.data.parameters;
-			if (sessionParameters.mode) {
-				mode = sessionParameters.mode;
-			}
 			if (sessionParameters.totalTimeLimit) {
 				// 制限時間は `totalTimeLimit` 秒
 				gameTimeLimit = sessionParameters.totalTimeLimit - 10; // ゲーム終了時間の10秒前にリザルト画面に移るようにする
+				mode = "ranking";
 			}
 		}
 	});
