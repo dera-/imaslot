@@ -1,10 +1,19 @@
-export const createBlock = (x: number, y: number, width: number, height: number) => {
+export interface BlockParameters {
+	scene: g.Scene;
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+}
+
+export const createBlock = (params: BlockParameters) => {
 	return new g.FilledRect({
-		x,
-		y,
-		width,
-		height,
+		scene: params.scene,
+		x: params.x,
+		y: params.y,
+		width: params.width,
+		height: params.height,
 		cssColor: "black",
-		alpha: 0.75
+		opacity: 0.75
 	});
 };

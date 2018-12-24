@@ -2,14 +2,17 @@ import {config} from "./config";
 import {DynamicFontRepository} from "./repository/DynamicFontRepository";
 import {Slot} from "./slot";
 
-const betValues = [1, 5, 10, 50, 100];
+const betValues = [1, 5, 10, 20, 50, 100];
 const defaultBetIndex = -1;
 
 export class Player {
 	private _money: number;
 	private _charaSprites: {[key: string]: g.Sprite};
 	private _currentCharaStatus: string;
+	private _statusPane: g.Pane;
+	private _coinSprite: g.FrameSprite;
 	private _moneyLabel: g.Label;
+	private _additionalMoneyLabel: g.Label;
 	// この下辺りの変数はmutableなやつ
 	private _betValue: number;
 	private _betValuesIndex: number;
@@ -76,24 +79,70 @@ export class Player {
 		scene.append(this._charaSprites[this._currentCharaStatus]);
 	}
 
-	getMoneyLabel(scene: g.Scene): g.Label {
-		const font = DynamicFontRepository.instance.getDynamicFont("player");
-		if (this._moneyLabel === undefined) {
-			this._moneyLabel = new g.Label({
-				scene: scene,
-				text: "残チップ数：" + this._money,
-				textColor: "white",
-				font: font,
-				fontSize: config.game.player.label.size,
-				x: config.game.player.label.x,
-				y: config.game.player.label.y
+	getCurrentStatusPane(scene: g.Scene): g.Pane {
+		this._statusPane = new g.Pane({
+			scene,
+			width: config.game.player.status.width,
+			height: config.game.player.status.height,
+			x: config.game.player.status.x,
+			y: config.game.player.status.y
+		});
+		if (this._coinSprite === undefined) {
+			this._coinSprite = new g.FrameSprite({
+				scene,
+				src: scene.assets["coins"] as g.ImageAsset,
+				width: config.game.player.status.coin.width,
+				height: config.game.player.status.coin.height,
+				srcWidth: 400,
+				srcHeight: 400,
+				frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 , 11, 12, 13, 14, 15, 16, 17, 18, 19],
+				interval: 250,
+				x: config.game.player.status.coin.x,
+				y: config.game.player.status.coin.y
 			});
 		}
-		return this._moneyLabel;
+		this._coinSprite.start();
+		this._statusPane.append(this._coinSprite);
+		if (this._moneyLabel === undefined) {
+			const font = DynamicFontRepository.instance.getDynamicFont("player");
+			this._moneyLabel = new g.Label({
+				scene: scene,
+				text: "" + this._money,
+				textColor: "white",
+				font: font,
+				fontSize: config.game.player.status.label.size,
+				x: config.game.player.status.label.x,
+				y: config.game.player.status.label.y
+			});
+		}
+		this._statusPane.append(this._moneyLabel);
+		return this._statusPane;
+	}
+
+	getAdditionalMoneyLabel(scene: g.Scene): g.Label {
+		if (this._additionalMoneyLabel === undefined) {
+			const font = DynamicFontRepository.instance.getDynamicFont("player");
+			this._additionalMoneyLabel = new g.Label({
+				scene: scene,
+				text: "",
+				textColor: "yellow",
+				font: font,
+				fontSize: config.game.player.additional_money_label.size,
+				x: config.game.player.additional_money_label.x,
+				y: config.game.player.additional_money_label.y
+			});
+		}
+		return this._additionalMoneyLabel;
 	}
 
 	changeMoneyLabel(money: number): void {
-		this._moneyLabel.text = "残チップ数：" + money;
+		this._moneyLabel.text = "" + money;
 		this._moneyLabel.invalidate();
+	}
+
+	changeAdditionalMoneyLabel(additional: number): void {
+		// とりあえず追加分表示する感じにする(減少分は一旦やらない)
+		this._additionalMoneyLabel.text = additional !== 0 ? "+" + additional : "";
+		this._additionalMoneyLabel.invalidate();
 	}
 }

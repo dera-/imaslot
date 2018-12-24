@@ -3,6 +3,7 @@ import {config} from "./config";
 import {Player} from "./player";
 import {DynamicFontRepository} from "./repository/DynamicFontRepository";
 import {createBlock} from "./block";
+import {ResultScene} from "./ResultScene";
 
 export = (param: g.GameMainParameterObject): void => {
 	const scene = new g.Scene({
@@ -11,18 +12,12 @@ export = (param: g.GameMainParameterObject): void => {
 			"nataslot_line0_0",
 			"nataslot_line0_1",
 			"nataslot_line0_2",
-			"nataslot_line0_3",
-			"nataslot_line0_4",
 			"nataslot_line1_0",
 			"nataslot_line1_1",
 			"nataslot_line1_2",
-			"nataslot_line1_3",
-			"nataslot_line1_4",
 			"nataslot_line2_0",
 			"nataslot_line2_1",
 			"nataslot_line2_2",
-			"nataslot_line2_3",
-			"nataslot_line2_4",
 			"nataslot_reel",
 			"nata_mu1",
 			"nata_mu2",
@@ -41,16 +36,21 @@ export = (param: g.GameMainParameterObject): void => {
 			"pushed_start_button",
 			"pushed_stop_button",
 			"button",
-			"pushed_button"
+			"pushed_button",
+			"coins"
 		]
 	});
-	let totalTimeLimit = config.game.default_time_limit;
+	let mode = "none";
+	let gameTimeLimit = config.game.time.default_limit;
 	scene.message.add((msg) => {
-		if (msg.data && msg.data.type === "start") {
-			// type: "start" でも parameters などが与えられないこともあるので存在を確認
-			if (msg.data.parameters && msg.data.parameters.totalTimeLimit) {
+		if (msg.data && msg.data.type === "start" && msg.data.parameters) {
+			const sessionParameters: any = msg.data.parameters;
+			if (sessionParameters.mode) {
+				mode = sessionParameters.mode;
+			}
+			if (sessionParameters.totalTimeLimit) {
 				// 制限時間は `totalTimeLimit` 秒
-				totalTimeLimit = msg.data.parameters.totalTimeLimit;
+				gameTimeLimit = sessionParameters.totalTimeLimit - 10; // ゲーム終了時間の10秒前にリザルト画面に移るようにする
 			}
 		}
 	});
@@ -60,7 +60,7 @@ export = (param: g.GameMainParameterObject): void => {
 		const playerFont = new g.DynamicFont({
 			game: scene.game,
 			fontFamily: g.FontFamily.Monospace,
-			size: config.game.player.label.size
+			size: config.game.player.status.label.size
 		});
 		const timeFont = new g.DynamicFont({
 			game: scene.game,
@@ -114,7 +114,8 @@ export = (param: g.GameMainParameterObject): void => {
 		});
 		const player = new Player(nataliaFaceSprites);
 		scene.append(player.charaSprite);
-		scene.append(player.getMoneyLabel(scene));
+		scene.append(player.getCurrentStatusPane(scene));
+		scene.append(player.getAdditionalMoneyLabel(scene));
 
 		// リール画像
 		const reelSprite = new g.Sprite({
@@ -132,29 +133,53 @@ export = (param: g.GameMainParameterObject): void => {
 		// リール・スロットの生成
 		const reels: Reel[] = [];
 		for (let i = 0; i < config.game.slot.reel.count; i++) {
+			const paneWidth = config.game.slot.reel.pane.width;
+			const paneHeight = config.game.slot.reel.pane.height;
+			const paneX = config.game.slot.reel.x + config.game.slot.reel.pane.dx + i * config.game.slot.reel.pane.intervalX;
+			const paneY = config.game.slot.reel.y + config.game.slot.reel.pane.dy;
 			const pane = new g.Pane({
 				scene: scene,
-				width: config.game.slot.reel.pane.width,
-				height: config.game.slot.reel.pane.height,
-				x: config.game.slot.reel.x + config.game.slot.reel.pane.dx + i * config.game.slot.reel.pane.intervalX,
-				y: config.game.slot.reel.y + config.game.slot.reel.pane.dy
+				width: paneWidth,
+				height: paneHeight,
+				x: paneX,
+				y: paneY
 			});
-			const sprites = [0, 1, 2, 3, 4].map(num => {
+			const sprites = [0, 1, 2].map(num => {
 				const imageKey = "nataslot_line" + i + "_" + num;
 				return new g.Sprite({
 					scene: scene,
 					src: scene.assets[imageKey] as g.ImageAsset,
 					width: config.game.slot.reel.element.width,
 					height: config.game.slot.reel.element.height * config.game.slot.reel.element.count_per_set,
-					srcWidth: 200,
-					srcHeight: 800
+					srcWidth: 800,
+					srcHeight: 2560
 				});
 			});
-			const reel = new Reel(pane, sprites, i);
+			const blocks = [0, 1, 2].map(num => {
+				return createBlock({
+					scene,
+					width: paneWidth,
+					height: paneHeight / 3,
+					x: 0,
+					y: paneHeight * num / 3
+				});
+			});
+			const reel = new Reel(pane, sprites, blocks, i);
 			scene.append(reel.image);
 			reels.push(reel);
 		}
 		const slot = new Slot(reels);
+
+		let hasRefreshed = false;
+		const refreshGameDisplay = () => {
+			if (hasRefreshed) {
+				return;
+			}
+			slot.blackOut();
+			player.changeAdditionalMoneyLabel(0);
+			player.changeFaceSprite(scene, config.game.player.character.default_status);
+			hasRefreshed = true;
+		};
 
 		// スタートボタンsprite
 		const startButtonSprite = new g.Sprite({
@@ -168,12 +193,13 @@ export = (param: g.GameMainParameterObject): void => {
 			y: config.game.slot.button.start.y,
 			touchable: true
 		});
-		const startButtonBlock = createBlock(
-			config.game.slot.button.start.x,
-			config.game.slot.button.start.y,
-			config.game.slot.button.start.width,
-			config.game.slot.button.start.height
-		);
+		const startButtonBlock = createBlock({
+			scene,
+			x: config.game.slot.button.start.x,
+			y: config.game.slot.button.start.y,
+			width: config.game.slot.button.start.width,
+			height: config.game.slot.button.start.height
+		});
 		startButtonSprite.pointDown.add(() => {
 			startButtonSprite.surface = g.Util.asSurface(scene.assets["pushed_start_button"] as g.ImageAsset);
 			startButtonSprite.invalidate();
@@ -186,7 +212,6 @@ export = (param: g.GameMainParameterObject): void => {
 				player.bet();
 				betButtonBlock.show();
 				startButtonBlock.show();
-				stopButtonBlocks.forEach(block => block.hide());
 				betLabel.text = player.betValue + " bet";
 				betLabel.invalidate();
 				(scene.assets["start_se"] as g.AudioAsset).play();
@@ -210,12 +235,13 @@ export = (param: g.GameMainParameterObject): void => {
 			});
 		});
 		const stopButtonBlocks = [0, 1, 2].map((index: number) => {
-			return createBlock(
-				config.game.slot.button.stop.x + index * config.game.slot.button.stop.intervalX,
-				config.game.slot.button.stop.y,
-				config.game.slot.button.stop.width,
-				config.game.slot.button.stop.height
-			);
+			return createBlock({
+				scene,
+				x: config.game.slot.button.stop.x + index * config.game.slot.button.stop.intervalX,
+				y: config.game.slot.button.stop.y,
+				width: config.game.slot.button.stop.width,
+				height: config.game.slot.button.stop.height
+			});
 		});
 		for (let index = 0; index < stopButtonSprites.length; index++) {
 			const sprite = stopButtonSprites[index];
@@ -254,14 +280,17 @@ export = (param: g.GameMainParameterObject): void => {
 			text: "0 bet",
 			textColor: "white",
 			font: DynamicFontRepository.instance.getDynamicFont("bet"),
-			fontSize: config.game.slot.button.bet.label_size
+			fontSize: config.game.slot.button.bet.label_size,
+			x: 0.1 * config.game.slot.button.bet.width,
+			y: 0.2 * config.game.slot.button.bet.height
 		});
-		const betButtonBlock = createBlock(
-			config.game.slot.button.bet.x,
-			config.game.slot.button.bet.y,
-			config.game.slot.button.bet.width,
-			config.game.slot.button.bet.height
-		);
+		const betButtonBlock = createBlock({
+			scene,
+			x: config.game.slot.button.bet.x,
+			y: config.game.slot.button.bet.y,
+			width: config.game.slot.button.bet.width,
+			height: config.game.slot.button.bet.height
+		});
 		betButtonBlock.hide(); // 初期状態では別途ボタンは押せるようにしておく
 		betButtonSprite.append(betLabel);
 		betButtonSprite.pointDown.add(() => {
@@ -269,46 +298,85 @@ export = (param: g.GameMainParameterObject): void => {
 			betButtonSprite.invalidate();
 		});
 		betButtonSprite.pointUp.add(() => {
+			refreshGameDisplay();
 			betButtonSprite.surface = g.Util.asSurface(scene.assets["button"] as g.ImageAsset);
 			betButtonSprite.invalidate();
 			if (!slot.canBet()) {
 				return;
 			}
 			player.reserve();
-			startButtonBlock.hide();
+			if (player.betValue > 0) {
+				startButtonBlock.hide();
+			}
 			betLabel.text = player.betValue + " bet";
 			betLabel.invalidate();
 		});
 		scene.append(betButtonSprite);
 		scene.append(betButtonBlock);
 
+		const timeLabel = new g.Label({
+			scene: scene,
+			text: `time: ${gameTimeLimit}`,
+			textColor: "white",
+			font: DynamicFontRepository.instance.getDynamicFont("time"),
+			fontSize: config.game.time.label.size,
+			x: config.game.time.label.x,
+			y: config.game.time.label.y
+		});
+		timeLabel.hide();
+		scene.append(timeLabel);
+
+		(scene.assets["main_bgm"] as g.AudioAsset).play();
 		scene.update.add(() => {
+			if (mode === "ranking" && gameTimeLimit > 0) {
+				timeLabel.show();
+				gameTimeLimit -= 1 / g.game.fps;
+				if (gameTimeLimit <= 0) {
+					(scene.assets["main_bgm"] as g.AudioAsset).stop();
+					g.game.pushScene(new ResultScene({
+						game: g.game,
+						assetIds: [
+							"nata_muri",
+							"nata_mu1",
+							"nata_sushi",
+							"nata_suki",
+							"nata_toutoi2",
+							"coins",
+							"nataslot_bg"
+						]
+					}, player.money));
+				} else if (gameTimeLimit <= config.game.time.danger) {
+					timeLabel.textColor = "red";
+				}
+				timeLabel.text = `time: ${Math.ceil(gameTimeLimit)}`;
+				timeLabel.invalidate();
+			}
 			slot.spin();
+			// リールの速度がMAXになったらブロックの開放(描画部分)
+			// あまりここでやるべきでない気がするが。。。
+			[0, 1, 2].forEach(i => {
+				if (slot.canStop(i)) {
+					stopButtonBlocks[i].hide();
+				}
+			});
 			if (slot.isComplete()) {
 				betButtonBlock.hide();
-				// TODO お金が増えたエフェクトと演出
-				player.addMoney(slot.calculateScore());
+				const prise = slot.calculateScore();
+				player.addMoney(prise);
+				player.changeAdditionalMoneyLabel(prise);
 				slot.refresh();
+				if (prise > 0) {
+					player.changeFaceSprite(scene, "nata_suki");
+					(scene.assets["hit_se"] as g.AudioAsset).play();
+				}
+				hasRefreshed = false;
+				scene.setTimeout(refreshGameDisplay, 2500);
 			}
 			// 表情変化 TODO: なんかRepositoryクラスとかで管理したい
 			if (player.currentCharaStatus !== "nata_muri" && !player.canContinue()) {
 				player.changeFaceSprite(scene, "nata_muri");
 			}
 		});
-
-		// (scene.assets["main_bgm"] as g.AudioAsset).play();
-
-		// const url = "https://api.search.nicovideo.jp/api/v2/illust/contents/search?q=%E3%83%8A%E3%82%BF%E3%83%BC%E3%83%AA%E3%82%A2"
-		// 	+ "&targets=tags&fields=title,description,tags,viewCounter,mylistCounter,commentCounter,thumbnailUrl"
-		// 	+ "&_sort=-viewCounter&_context=imaslot";
-		// const a = xhr({
-		// 	"url": url,
-		// 	"responseType": "json",
-		// }).then((resoponse) => {
-		// 	console.log(resoponse);
-		// }).catch((e) => {
-		// 	console.error(e);
-		// });
 	});
 	g.game.pushScene(scene);
 };
