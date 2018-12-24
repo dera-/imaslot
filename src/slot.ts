@@ -1,20 +1,16 @@
 import {config} from "./config";
 declare const console: any; // デバッグ用
 
-const prise = 20;
+const prise = 10;
 const minimumBuyIn = 1;
-const displayedIndex = 24;
-const maxSpeed = 2000 / 30; // スロットのスピンの最大速度(フレーム単位)
+const displayedIndex = 11;
+const maxSpeed = 1000 / 30; // スロットのスピンの最大速度(フレーム単位)
 const acceleration = maxSpeed / 45; // スロットのスピンの加速度
 const minusAcceleration = maxSpeed / 30; // ストップボタン押された後のスロットのスピンの加速度
 const lineElements = [
-	// 上の3行はテスト用
-	// [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	// [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	// [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
-	[24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0, 23, 21, 19, 17, 15, 13, 11, 9, 7, 5, 3, 1],
-	[4, 7, 10, 13, 16, 19, 22, 0, 3, 6, 9, 12, 15, 18, 21, 24, 2, 5, 8, 11, 14, 17, 20, 23, 1]
+	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+	[11, 9, 7, 5, 3, 1, 10, 8, 6, 4, 2, 0],
+	[3, 8, 1, 6, 11, 4, 9, 2, 7, 0, 5, 10]
 ];
 
 interface HitEvaluation {
@@ -45,9 +41,9 @@ export class Slot {
 		return this.magnification === 0;
 	}
 
-	canStart() {
+	canStart(betValue: number) {
 		// 「倍率が0でないこと=スロット動かしている」と判断しているけど、個別にフラグを用意した方がいいかなぁ？？
-		return this.betValue >= minimumBuyIn && this.magnification === 0;
+		return betValue >= minimumBuyIn && this.magnification === 0;
 	}
 
 	start() {
@@ -55,6 +51,7 @@ export class Slot {
 		this.betValue = 0;
 		this._reels.forEach((reel: Reel) => {
 			reel.allowSpin = true;
+			[0, 1, 2].forEach(i => reel.showBlock(i, false));
 		});
 	}
 
@@ -83,10 +80,6 @@ export class Slot {
 	}
 
 	calculateScore(): number {
-		// console.log("calculate");
-		// for (const reel of this._reels) {
-		// 	console.log(reel.getCurrentNumber());
-		// }
 		let dividends = 0;
 		const displayed: number[][] = this._reels.map((reel: Reel) => reel.getCurrentNumbers());
 		console.log("displayed", displayed);
@@ -112,13 +105,18 @@ export class Slot {
 				ozz: 1.0
 			}
 		];
+		const hitEvaluations: HitEvaluation[] = [];
 		evaluations.forEach((ev: HitEvaluation) => {
-			console.log(displayed[0][ev.place[0]], displayed[1][ev.place[1]], displayed[2][ev.place[2]]);
 			if (displayed[0][ev.place[0]] === displayed[1][ev.place[1]]
 				&& displayed[0][ev.place[0]] === displayed[2][ev.place[2]]) {
-				console.log("hit");
+				hitEvaluations.push(ev);
 				dividends += ev.ozz * prise * this.magnification;
-				console.log(dividends);
+			}
+		});
+		this.blackOut();
+		hitEvaluations.forEach(ev => {
+			for (let i = 0; i < 3; i++) {
+				this._reels[i].showBlock(ev.place[i], false);
 			}
 		});
 		return dividends;
@@ -127,6 +125,12 @@ export class Slot {
 	refresh(): void {
 		this.betValue = 0;
 		this.magnification = 0;
+	}
+
+	blackOut() {
+		this._reels.forEach((reel: Reel) => {
+			[0, 1, 2].forEach(i => reel.showBlock(i, true));
+		});
 	}
 }
 
@@ -137,14 +141,16 @@ export class Reel {
 	private _allowSpin: boolean;
 	private _spinSpeed: number;
 	private _currentIndex: number;
+	private _blocks: g.FilledRect[];
 
-	constructor(pane: g.Pane, sprites: g.Sprite[], index: number) {
+	constructor(pane: g.Pane, sprites: g.Sprite[], blocks: g.FilledRect[], index: number) {
 		this._pane = pane;
 		this._sprites = sprites;
 		this._elements = lineElements[index];
 		this._allowSpin = false;
 		this._spinSpeed = 0;
 		this._currentIndex = displayedIndex;
+		this._blocks = blocks;
 		this.initialize();
 	}
 
@@ -191,17 +197,24 @@ export class Reel {
 		return this._spinSpeed === maxSpeed;
 	}
 
+	showBlock(index: number, isShow: boolean = true): void {
+		if (isShow) {
+			this._blocks[index].show();
+		} else {
+			this._blocks[index].hide();
+		}
+	}
+
 	private initialize(): void {
 		this.setYPlace();
-		this._sprites.forEach((sprite) => {
-			this._pane.append(sprite);
-		});
+		this._sprites.forEach(sprite => this._pane.append(sprite));
+		this._blocks.forEach(block => this._pane.append(block));
 	}
 
 	private setYPlace(): void {
 		for (let i = 0; i < this._sprites.length; i++) {
 			const sprite = this._sprites[i];
-			const index = i === 0 && this._currentIndex === 24 ? this._sprites.length : i;
+			const index = i === 0 && this._currentIndex === 11 ? this._sprites.length : i;
 			sprite.y = config.game.slot.reel.element.dy
 				+ config.game.slot.reel.element.height * config.game.slot.reel.element.count_per_set * index
 				- config.game.slot.reel.element.height * (this._currentIndex - 1);

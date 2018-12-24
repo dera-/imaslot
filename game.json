@@ -32,93 +32,57 @@
 		},
 		"nataslot_line0_0": {
 			"type": "image",
-			"width": 200,
-			"height": 800,
+			"width": 800,
+			"height": 2560,
 			"path": "image/nataslot_line0_0.png"
 		},
 		"nataslot_line0_1": {
 			"type": "image",
-			"width": 200,
-			"height": 800,
+			"width": 800,
+			"height": 2560,
 			"path": "image/nataslot_line0_1.png"
 		},
 		"nataslot_line0_2": {
 			"type": "image",
-			"width": 200,
-			"height": 800,
+			"width": 800,
+			"height": 2560,
 			"path": "image/nataslot_line0_2.png"
-		},
-		"nataslot_line0_3": {
-			"type": "image",
-			"width": 200,
-			"height": 800,
-			"path": "image/nataslot_line0_3.png"
-		},
-		"nataslot_line0_4": {
-			"type": "image",
-			"width": 200,
-			"height": 800,
-			"path": "image/nataslot_line0_4.png"
 		},
 		"nataslot_line1_0": {
 			"type": "image",
-			"width": 200,
-			"height": 800,
+			"width": 800,
+			"height": 2560,
 			"path": "image/nataslot_line1_0.png"
 		},
 		"nataslot_line1_1": {
 			"type": "image",
-			"width": 200,
-			"height": 800,
+			"width": 800,
+			"height": 2560,
 			"path": "image/nataslot_line1_1.png"
 		},
 		"nataslot_line1_2": {
 			"type": "image",
-			"width": 200,
-			"height": 800,
+			"width": 800,
+			"height": 2560,
 			"path": "image/nataslot_line1_2.png"
-		},
-		"nataslot_line1_3": {
-			"type": "image",
-			"width": 200,
-			"height": 800,
-			"path": "image/nataslot_line1_3.png"
-		},
-		"nataslot_line1_4": {
-			"type": "image",
-			"width": 200,
-			"height": 800,
-			"path": "image/nataslot_line1_4.png"
 		},
 		"nataslot_line2_0": {
 			"type": "image",
-			"width": 200,
-			"height": 800,
+			"width": 800,
+			"height": 2560,
 			"path": "image/nataslot_line2_0.png"
 		},
 		"nataslot_line2_1": {
 			"type": "image",
-			"width": 200,
-			"height": 800,
+			"width": 800,
+			"height": 2560,
 			"path": "image/nataslot_line2_1.png"
 		},
 		"nataslot_line2_2": {
 			"type": "image",
-			"width": 200,
-			"height": 800,
+			"width": 800,
+			"height": 2560,
 			"path": "image/nataslot_line2_2.png"
-		},
-		"nataslot_line2_3": {
-			"type": "image",
-			"width": 200,
-			"height": 800,
-			"path": "image/nataslot_line2_3.png"
-		},
-		"nataslot_line2_4": {
-			"type": "image",
-			"width": 200,
-			"height": 800,
-			"path": "image/nataslot_line2_4.png"
 		},
 		"nataslot_bg": {
 			"type": "image",
@@ -208,9 +172,55 @@
 			"width": 300,
 			"height": 300,
 			"path": "image/nata_toutoi2.png"
+		},
+		"button": {
+			"type": "image",
+			"width": 205,
+			"height": 111,
+			"path": "image/button.png"
+		},
+		"pushed_button": {
+			"type": "image",
+			"width": 205,
+			"height": 111,
+			"path": "image/pushed_button.png"
+		},
+		"pushed_start_button": {
+			"type": "image",
+			"width": 169,
+			"height": 89,
+			"path": "image/pushed_start_button.png"
+		},
+		"pushed_stop_button": {
+			"type": "image",
+			"width": 111,
+			"height": 98,
+			"path": "image/pushed_stop_button.png"
+		},
+		"block": {
+			"type": "script",
+			"path": "script/block.js",
+			"global": true
+		},
+		"coins": {
+			"type": "image",
+			"width": 2000,
+			"height": 1600,
+			"path": "image/coins.png"
+		},
+		"ResultScene": {
+			"type": "script",
+			"path": "script/ResultScene.js",
+			"global": true
 		}
 	},
 	"environment": {
-		"sandbox-runtime": "2"
+		"sandbox-runtime": "2",
+		"niconico": {
+			"supportedModes": [
+				"single",
+				"ranking"
+			]
+		}
 	}
 }
