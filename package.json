@@ -26,8 +26,5 @@
     "rimraf": "~2.6.2",
     "tslint": "~5.8.0",
     "typescript": "~2.6.2"
-  },
-  "dependencies": {
-    "@akashic-extension/nico-playablead": "file:../nico-playablead/akashic-extension-nico-playablead-1.0.0.tgz"
   }
 }
